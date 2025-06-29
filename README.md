@@ -1,7 +1,8 @@
 🚀Title: Configure VPC Flow Logs and Store Logs in S3 Using IAM Role
-🔗 🔍Project Overview 
-To enhance visibility into your network traffic for security auditing and performance monitoring, your organization mandates capturing VPC Flow Logs. These logs must be stored in an S3 bucket for long-term analysis and archival. Proper access permissions must be implemented using IAM roles.
-Steps-
+🔗 🔍Project Objective
+  Set up VPC Flow Logs for a specified VPC and configure the log delivery to an Amazon S3 bucket using an IAM role with the required permissions.
+
+🚀 Steps-
 
 🔗 1 use dfault vpc.
 
@@ -14,13 +15,13 @@ Steps-
    
   Open the S3 Console → Click Create bucket.
 
-Name the bucket: vpc-flow-logs-bucket-<unique-id> (e.g., vpc-flow-logs-bucket-123456)
+Name the bucket: vpc-flow-logs-bucket-<unique-id> 
 
-  Uncheck "Block all public access" (S3 will still be private unless bucket policy allows otherwise)
+ Uncheck "Block all public access" (S3 will still be private unless bucket policy allows otherwise)
 
-   Enable Bucket Versioning (optional but good for log retention)
+ Enable Bucket Versioning (optional but good for log retention)
 
-   Click Create bucket
+ Click Create bucket
 
 
 🔗  3: Bucket Policy 
@@ -93,33 +94,17 @@ s3://<BUCKET_NAME>/<ACCOUNT_ID>/AWSLogs/<ACCOUNT_ID>/vpcflowlogs/<region>/<vpc-i
      ping -c 5 google.com (Helps in automated scripts or logs where you want a fixed amount of data).
 
 
-🔗 11: Download a log file.
+🔗 10: Download a log file.
 
-A default flow log line looks like:
+✅ A default flow log line looks like:
 
 version account-id interface-id srcaddr dstaddr srcport dstport protocol packets bytes start end action log-status
 
-Example:
-
-2 123456789012 eni-abc12345 10.0.1.10 10.0.2.10 443 49152 6 10 600 1623954120 1623954180 ACCEPT OK
-
-   How to navigate and download a VPC Flow Logs file from S3
-  Open https://console.aws.amazon.com/s3/
+✅ How to navigate and download a VPC Flow Logs file from S3.
    Find your S3 Bucket:
   In the Buckets list, click on your bucket name: <BUCKET_NAME>
 
- Navigate through the folder structure:
-Follow this path inside the bucket:
- <ACCOUNT_ID>/
-        AWSLogs/
-            <ACCOUNT_ID>/
-                vpcflowlogs/
-                    <region>/
-                        <vpc-id>/
-                            ...
-
  ✅  Click on the folder named with your Account ID.
-
 Then open the AWSLogs folder.
    Inside, again open the folder named with your Account ID.
  Next, open the vpcflowlogs folder.
