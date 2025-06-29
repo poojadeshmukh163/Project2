@@ -1,7 +1,7 @@
 Project: 2
 Title: Configure VPC Flow Logs and Store Logs in S3 Using IAM Role
 Scenario:
-To enhance visibility into your network traffic for security auditing and performance monitoring, your organization mandates capturing VPC Flow Logs. These logs must be stored in an S3 bucket for long-term analysis and archival. Proper access permissions must be implemented using IAM roles.S
+To enhance visibility into your network traffic for security auditing and performance monitoring, your organization mandates capturing VPC Flow Logs. These logs must be stored in an S3 bucket for long-term analysis and archival. Proper access permissions must be implemented using IAM roles.
 Steps-
 
 🔧  1 use dfault vpc.
@@ -22,34 +22,11 @@ Steps-
 
     Click Create bucket
 
-🔧  3: Bucket Policy Example
+🔧  3: Bucket Policy 
 
 Replace placeholders (<ACCOUNT_ID>, <BUCKET_NAME>, <REGION>) accordingly:
 
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowVPCFlowLogsServicePutObject",
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "vpc-flow-logs.amazonaws.com"
-      },
-      "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::<BUCKET_NAME>/<ACCOUNT_ID>/AWSLogs/<ACCOUNT_ID>/*",
-      "Condition": {
-        "StringEquals": {
-          "aws:SourceAccount": "<ACCOUNT_ID>"
-        },
-        "ArnLike": {
-          "aws:SourceArn": "arn:aws:ec2:<REGION>:<ACCOUNT_ID>:vpc-flow-log/*"
-        }
-      }
-    }
-  ]
-}
-
- 📌 This policy ensures that only the VPC Flow Logs service can write logs from your account into your S3 bucket.
+📌 This policy ensures that only the VPC Flow Logs service can write logs from your account into your S3 bucket.
 
 🔧 4: Create IAM Role for VPC Flow Logs
 
@@ -63,17 +40,6 @@ Replace placeholders (<ACCOUNT_ID>, <BUCKET_NAME>, <REGION>) accordingly:
 
 🔧  5: Custom IAM Policy (Attach this to the role)
 
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::<BUCKET_NAME>/<ACCOUNT_ID>/AWSLogs/<ACCOUNT_ID>/*"
-    }
-  ]
-}
-
 📌 You can limit the role further with conditions, but this allows writing logs to the specified S3 prefix.
 
     Name the role: VPCFlowLogsToS3Role
@@ -83,19 +49,6 @@ Replace placeholders (<ACCOUNT_ID>, <BUCKET_NAME>, <REGION>) accordingly:
 🔧  6: Update Trust Relationship
 
 Modify the trust policy to allow VPC Flow Logs service to assume this role:
-
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "vpc-flow-logs.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
 
 📌This policy is used to modify the trust policy to allow the flow logs service.
 
