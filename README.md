@@ -2,23 +2,26 @@
 🔗 🔍Project Overview 
 To enhance visibility into your network traffic for security auditing and performance monitoring, your organization mandates capturing VPC Flow Logs. These logs must be stored in an S3 bucket for long-term analysis and archival. Proper access permissions must be implemented using IAM roles.
 Steps-
+
 🔗 1 use dfault vpc.
 
-    Go to VPC Console → Select an existing VPC.
+ Go to VPC Console → Select an existing VPC.
 
-    Note down the VPC ID, Region, and Account ID.
+ Note down the VPC ID, Region, and Account ID.
+
 
 🔗 2: Create an S3 Bucket for Logs
    
-    Open the S3 Console → Click Create bucket.
+  Open the S3 Console → Click Create bucket.
 
-    Name the bucket: vpc-flow-logs-bucket-<unique-id> (e.g., vpc-flow-logs-bucket-123456)
+Name the bucket: vpc-flow-logs-bucket-<unique-id> (e.g., vpc-flow-logs-bucket-123456)
 
-    Uncheck "Block all public access" (S3 will still be private unless bucket policy allows otherwise)
+  Uncheck "Block all public access" (S3 will still be private unless bucket policy allows otherwise)
 
-    Enable Bucket Versioning (optional but good for log retention)
+   Enable Bucket Versioning (optional but good for log retention)
 
-    Click Create bucket
+   Click Create bucket
+
 
 🔗  3: Bucket Policy 
 
@@ -26,23 +29,26 @@ Replace placeholders (<ACCOUNT_ID>, <BUCKET_NAME>, <REGION>) accordingly:
 
 📌 This policy ensures that only the VPC Flow Logs service can write logs from your account into your S3 bucket.
 
+
 🔗 4: Create IAM Role for VPC Flow Logs
 
-    Go to IAM Console → Roles → Click Create role
+ Go to IAM Console → Roles → Click Create role
 
-    Trusted entity type: AWS Service
+  Trusted entity type: AWS Service
 
-    Use case: Select EC2 
+  Use case: Select EC2 
 
-    Click Next: Permissions
+   Click Next: Permissions
+
 
 🔗  5: Custom IAM Policy (Attach this to the role)
 
 📌 You can limit the role further with conditions, but this allows writing logs to the specified S3 prefix.
 
-    Name the role: VPCFlowLogsToS3Role
+Name the role: VPCFlowLogsToS3Role
 
-    Click Create Role
+  Click Create Role
+
 
 🔗  6: Update Trust Relationship
 
@@ -50,36 +56,34 @@ Modify the trust policy to allow VPC Flow Logs service to assume this role:
 
 📌This policy is used to modify the trust policy to allow the flow logs service.
 
+
 🔗 7: Enable VPC Flow Logs
 
-    Go to VPC Console → Your VPCs → Select your VPC
-
+Go to VPC Console → Your VPCs → Select your VPC
     In the lower panel, go to Flow Logs tab → Create flow log
 
 Required Settings:
 
-    Filter: All 
+  Filter: All 
 
-    Destination: Send to an S3 bucket
+ Destination: Send to an S3 bucket
 
-    Destination S3 bucket ARN:
+   Destination S3 bucket ARN:
 
-    arn:aws:s3:::<BUCKET_NAME>/<ACCOUNT_ID>/AWSLogs/<ACCOUNT_ID>/
+   arn:aws:s3:::<BUCKET_NAME>/<ACCOUNT_ID>/AWSLogs/<ACCOUNT_ID>/
 
-    IAM Role: Select the role VPCFlowLogsToS3Role
+ IAM Role: Select the role VPCFlowLogsToS3Role
 
-    Log format: Use default 
+  Log format: Use default 
 
-Click Create flow log
+
 🔗  8: Generate and Verify Logs
 
-    Launch or use existing EC2 instances in that VPC.
+  Launch or use existing EC2 instances in that VPC.
+Generate some network activity (ping,ssh).
 
-    Generate some network activity (ping,ssh).
-
-    Go to your S3 Bucket and navigate to the path:
-
-    s3://<BUCKET_NAME>/<ACCOUNT_ID>/AWSLogs/<ACCOUNT_ID>/vpcflowlogs/<region>/<vpc-id>/...
+ Go to your S3 Bucket and navigate to the path:
+s3://<BUCKET_NAME>/<ACCOUNT_ID>/AWSLogs/<ACCOUNT_ID>/vpcflowlogs/<region>/<vpc-id>/...
 
 
 🔗 9: ping ICMP Traffic (Internet Control Message Protocol)
@@ -100,18 +104,13 @@ Example:
 2 123456789012 eni-abc12345 10.0.1.10 10.0.2.10 443 49152 6 10 600 1623954120 1623954180 ACCEPT OK
 
    How to navigate and download a VPC Flow Logs file from S3
+  Open https://console.aws.amazon.com/s3/
+   Find your S3 Bucket:
+  In the Buckets list, click on your bucket name: <BUCKET_NAME>
 
-        Open https://console.aws.amazon.com/s3/
-
-    Find your S3 Bucket:
-
-        In the Buckets list, click on your bucket name: <BUCKET_NAME>
-
-    Navigate through the folder structure:
-
-    Follow this path inside the bucket:
-
-    <ACCOUNT_ID>/
+ Navigate through the folder structure:
+Follow this path inside the bucket:
+ <ACCOUNT_ID>/
         AWSLogs/
             <ACCOUNT_ID>/
                 vpcflowlogs/
@@ -119,26 +118,19 @@ Example:
                         <vpc-id>/
                             ...
 
-    ✅  Click on the folder named with your Account ID.
+ ✅  Click on the folder named with your Account ID.
 
-        Then open the AWSLogs folder.
+Then open the AWSLogs folder.
+   Inside, again open the folder named with your Account ID.
+ Next, open the vpcflowlogs folder.
+ Then select the folder for your specific region.
+  Inside, open the folder for your VPC ID.
+ You will see folders sorted by date and time for the flow logs.
 
-        Inside, again open the folder named with your Account ID.
+ ✅  Download the log file:
+ Find the log file (usually .log.gz or .txt).
 
-        Next, open the vpcflowlogs folder.
-
-        Then select the folder for your specific region.
-
-        Inside, open the folder for your VPC ID.
-
-        You will see folders sorted by date and time for the flow logs.
-
-   ✅  Download the log file:
-
-        Find the log file (usually .log.gz or .txt).
-
-        Select the file by checking the box next to it.
-
+   Select the file by checking the box next to it.
     Click the Download button (top right).
 
 
