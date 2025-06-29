@@ -4,13 +4,13 @@ Scenario:
 To enhance visibility into your network traffic for security auditing and performance monitoring, your organization mandates capturing VPC Flow Logs. These logs must be stored in an S3 bucket for long-term analysis and archival. Proper access permissions must be implemented using IAM roles.S
 Steps-
 
-🔧 STEP 1: use dfault vpc.
+🔧  1 use dfault vpc.
 
     Go to VPC Console → Select an existing VPC.
 
     Note down the VPC ID, Region, and Account ID.
 
-🔧 STEP 2: Create an S3 Bucket for Logs
+🔧 2: Create an S3 Bucket for Logs
    
     Open the S3 Console → Click Create bucket.
 
@@ -22,7 +22,7 @@ Steps-
 
     Click Create bucket
 
-🔧 STEP 3: Bucket Policy Example
+🔧  3: Bucket Policy Example
 
 Replace placeholders (<ACCOUNT_ID>, <BUCKET_NAME>, <REGION>) accordingly:
 
@@ -51,7 +51,7 @@ Replace placeholders (<ACCOUNT_ID>, <BUCKET_NAME>, <REGION>) accordingly:
 
  📌 This policy ensures that only the VPC Flow Logs service can write logs from your account into your S3 bucket.
 
-🔧STEP 4: Create IAM Role for VPC Flow Logs
+🔧 4: Create IAM Role for VPC Flow Logs
 
     Go to IAM Console → Roles → Click Create role
 
@@ -61,7 +61,7 @@ Replace placeholders (<ACCOUNT_ID>, <BUCKET_NAME>, <REGION>) accordingly:
 
     Click Next: Permissions
 
-🔧 STEP 5: Custom IAM Policy (Attach this to the role)
+🔧  5: Custom IAM Policy (Attach this to the role)
 
 {
   "Version": "2012-10-17",
@@ -80,7 +80,7 @@ Replace placeholders (<ACCOUNT_ID>, <BUCKET_NAME>, <REGION>) accordingly:
 
     Click Create Role
 
-🔧 STEP 6: Update Trust Relationship
+🔧  6: Update Trust Relationship
 
 Modify the trust policy to allow VPC Flow Logs service to assume this role:
 
@@ -99,7 +99,7 @@ Modify the trust policy to allow VPC Flow Logs service to assume this role:
 
 📌This policy is used to modify the trust policy to allow the flow logs service.
 
-🔧STEP 7: Enable VPC Flow Logs
+🔧 7: Enable VPC Flow Logs
 
     Go to VPC Console → Your VPCs → Select your VPC
 
@@ -120,7 +120,7 @@ Required Settings:
     Log format: Use default 
 
 Click Create flow log
-🔧 STEP 8: Generate and Verify Logs
+🔧  8: Generate and Verify Logs
 
     Launch or use existing EC2 instances in that VPC.
 
@@ -131,25 +131,14 @@ Click Create flow log
     s3://<BUCKET_NAME>/<ACCOUNT_ID>/AWSLogs/<ACCOUNT_ID>/vpcflowlogs/<region>/<vpc-id>/...
 
 
-🔧 STEP 9:
-    ping ICMP Traffic (Internet Control Message Protocol)
+🔧 9: ping ICMP Traffic (Internet Control Message Protocol)
     *Basic Troubleshooting Tool:
      Ping is often the first step to check if a server or device is alive and responding before moving to deeper diagnostics.
      ping google.com (Helps you identify where problems may be happening.)
      ping -c 5 google.com (Helps in automated scripts or logs where you want a fixed amount of data).
 
-🔧STEP 10:
- ✅ Summary Checklist
-Component Configured?
-1) VPC Exists	                    ✅
-2) S3 Bucket Created	            ✅
-3) Bucket Policy Applied	        ✅
-4)IAM Role Created	                ✅
-5)IAM Role Trust & Permissions	    ✅
-6)Flow Logs Enabled for VPC	        ✅
-7)Logs Verified in S3	            ✅
 
-🔧STEP 11: Download a log file.
+🔧 11: Download a log file.
 
 A default flow log line looks like:
 
